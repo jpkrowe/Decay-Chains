@@ -23,7 +23,39 @@ def task_1a_simple_decay_chain_populations(output_times: list, initial_number_of
     :param decay_rate: The decay rate of the decaying isomer in units of 1/s.
     :returns: Should return two sequences (e.g. lists, Tuples, 1D Numpy arrays) of length n where n is the number of output times. The first sequence contains the populations of Isomer 1 as a function of time, the second contains he populations of Isomer 1 as a function of time. Ine ach sequence, the value with index [0] in each array is the population the isomer at t=0 and the value with index [n] is the number of moles of the isomer at the end of the simulation.
     '''
-    pass
+    # Write a runge kutta method to solve the following differential equation
+    # dn_1/dt = -l*n_1
+    # dn_2/dt = l*n_1
+
+    import numpy as np
+    from scipy.integrate import solve_ivp
+
+    # Function to calculate the value of dn_1/dt
+    def f1(n1, n2, l):
+        return -l*n1
+
+    # Function to calculate the value of dn_2/dt
+    def f2(n1, n2, l):
+        return l*n1
+
+    def dy_dt(t, y):
+        return np.array([f1(y[0], y[1], l), f2(y[0], y[1], l)])
+
+    # calculate the values of n_1 and n_2 over 10000 time steps
+
+
+    # use command line arguments to take initial values of n_1 and n_2
+    l = decay_rate # Decay rate for n_1
+    requested_times = output_times # Number of time steps
+    t_span = (0, np.array(requested_times, dtype=float).max())
+    y0 = (initial_number_of_moles, 0)
+    # Create a list of time steps from 0 to total_timesteps with a step size of h
+
+    sol = solve_ivp(dy_dt, t_span, y0, t_eval = requested_times)
+    n1 = sol.y[0]
+    n2 = sol.y[1]
+    
+    return n1, n2
 
 
 def task_1b_decay_data_from_filename(filepath: str):
