@@ -10,8 +10,10 @@ class Test_1B(unittest.TestCase):
     def test_stable(self):
         '''
         Tests if the correct answer is returned when the isomer is stable
+        
         '''
         filename = "dec-001_H_001.endf"
+
 
         decay_rate, decay_atomic_number_change, decay_atomic_mass_change = interface.task_1b_decay_data_from_filename(filename)
 
