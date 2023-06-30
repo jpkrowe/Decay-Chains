@@ -131,7 +131,7 @@ Write code able to read the ENDF data files and extract the half-life and decay 
 
 For instance:
 * Providing the filename ```dec-002_He_004.endf``` should be found to have a decay rate of 0/s and a corresponding change to atomic number of 0 and atomic mass of 0
-* Providing the filename ```dec-002_He_006.endf``` should be found to have a decay rate of $\frac{\ln{2}}{806.7\textrm{ms}}$ = 0.859/s and a corresponding change to atomic number of -1 and atomic mass of 0
+* Providing the filename ```dec-002_He_006.endf``` should be found to have a decay rate of $\frac{\ln{2}}{806.7\textrm{ms}}$ = 0.859/s and a corresponding change to atomic number of +1 and atomic mass of 0
 
 ### Activity 1C
 
