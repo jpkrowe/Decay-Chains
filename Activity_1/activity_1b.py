@@ -1,14 +1,11 @@
 import os 
 import re
 import numpy as np
-'function that asks for filename adn sets value' 
-def get_filename():
-    filename = input('Enter a filename: ')
-    return filename
 
 'parse text to get string after the word ''Parent half-life: '' from a text file'
 def parse_file(filename):
-    filename =  os.path.join('../decay_data/',filename)
+    # filename =  os.path.join('../decay_data/',filename)
+    filename = 'decay_data/' + filename
     file = open(filename, 'r')
     text = file.read()
     file.close()
@@ -23,6 +20,7 @@ def parse_text(text):
     first_line = lines[0]
     if "stable" in first_line.lower():
         parsed_first_line = re.findall(r'(.+?)\s+\d+ 1451', first_line)[0]
+        parsed_first_line = 'Stable'
         parsed_decay_type = ""
     else:
         parsed_first_line = re.findall(r'(.+?)\s+\d+ 1451', first_line)[0]
@@ -61,18 +59,18 @@ def parse_text_up_to(string, delimiter):
     parsed_text = string.partition(delimiter)[0]
     return parsed_text
 
-A,Z = 0,0
+
 #function that if decay mode is A atomic mass number is reduced by 4 and Z atomic number is reduced by 2, if B atomic mass number is reduced by 1 and Z atomic number is increased by 1, if EC atomic mass number is reduced by 1 and Z atomic number is increased by 1, if IT atomic mass number is reduced by 1 and Z atomic number is increased by 1, if P atomic mass number is reduced by 1 and Z atomic number is increased by 1, if N atomic mass number is reduced by 1 and Z atomic number is increased by 1, if SF atomic mass number is reduced by 1 and Z atomic number is increased by 1, if O atomic mass number is reduced by 1 and Z atomic number is increased by 1, if R atomic mass number is reduced by 1 and Z atomic number is increased by 1, if D atomic mass number is reduced by 2 and Z atomic number is reduced by 1, if T atomic mass number is reduced by 3 and Z atomic number is reduced by 1, if Q atomic mass number is reduced by 4 and Z atomic number is reduced by 2
 def decay_mode_out(decay_mode,A,Z):
     if decay_mode == 'A':
         A -= 4
         Z -= 2
     elif decay_mode == 'B-':
-        A -= 1
+        A = A
         Z += 1
     elif decay_mode == 'EC':
-        A -= 1
-        Z += 1
+        A = A
+        Z -= 1
     elif decay_mode == 'IT':
         A -= 1
         Z += 1
@@ -104,14 +102,17 @@ def decay_mode_out(decay_mode,A,Z):
         print('Invalid decay mode')  
     return A, Z
 
-# filename = get_filename()
-filename  = 'dec-002_He_006.endf'
-split_text = parse_file(filename)
+A,Z = 0,0
+split_text = parse_file(filepath)
 decay_time, decay_mode = (parse_text(split_text))
-decay_time_seconds = convert_to_seconds(parse_text_up_to(decay_time,find_time_unit(decay_time)[0]),find_time_unit(decay_time)[0])
-decay_rate = np.log(2)/decay_time_seconds
-print(decay_rate)
-print(decay_mode_out(decay_mode.replace(' ',''),A,Z))
-
-#dec-002_He_006.endf
-# dec-004_Be_010.endf
+if decay_time == 'Stable':
+    decay_time_seconds = 0
+    decay_rate = 0
+    decay_atomic_number_change, decay_atomic_mass_change = 0,0
+else:
+    decay_time_seconds = convert_to_seconds(parse_text_up_to(decay_time,find_time_unit(decay_time)[0]),find_time_unit(decay_time)[0])
+    decay_rate = np.log(2)/decay_time_seconds
+    decay_atomic_mass_change, decay_atomic_number_change  = decay_mode_out(decay_mode.replace(' ',''),A,Z)
+    # decay_atomic_number_change, decay_atomic_mass_change = Z,A
+# print('PLS HELP',Z,A)
+return [decay_rate, decay_atomic_number_change, decay_atomic_mass_change]
