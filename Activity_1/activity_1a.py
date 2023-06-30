@@ -6,7 +6,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import sys
 
-# Command line arguments are used to take the initial values of n_1 and n_2 and the decay rate of n_1
+# Command line arguments are used to take the initial values of n_1 and n_2 and the decay rate of n_1 and then a list of requested times
 
 # Function to calculate the value of dn_1/dt
 def f1(n1, n2, l):
@@ -17,7 +17,7 @@ def f2(n1, n2, l):
     return l*n1
 
 # Function to calculate the value of n_1 and n_2 using Runge-Kutta method
-def rungeKutta(n1, n2, l, h, t):
+def rungeKutta(n1, n2, l, h):
     k_1 = h*f1(n1, n2, l)
     l_1 = h*f2(n1, n2, l)
     k_2 = h*f1(n1 + 0.5*k_1, n2, l)
@@ -32,21 +32,31 @@ def rungeKutta(n1, n2, l, h, t):
 
 # calculate the values of n_1 and n_2 over 10000 time steps
 
-n1 = np.zeros(10000)
-n2 = np.zeros(10000)
+
 # use command line arguments to take initial values of n_1 and n_2
 
 
 
-n1[0] = sys.argv[1]
-n2[0] = sys.argv[2]
-l = sys.argv[3] # Decay rate for n_1
-time_steps = sys.argv[4:] # Number of time steps
 
+l = float(sys.argv[3]) # Decay rate for n_1
+requested_times = np.array(sys.argv[4:], dtype=float) # Number of time steps
 h = 0.01
-t = np.linspace(0, 100, 10000)
-for i in range(1, 10000):
-    n1[i], n2[i] = rungeKutta(n1[i-1], n2[i-1], l, h, t[i])
+total_timesteps = requested_times.max()/h
+n1 = np.array([sys.argv[1]], dtype=float)
+n2 = np.array([sys.argv[2]], dtype=float)
+
+# Create a list of time steps from 0 to total_timesteps with a step size of h
+t = np.array([0], dtype=float)
+for i in range(1, int(total_timesteps)):
+    n1_temp, n2_temp = rungeKutta(n1[i-1], n2[i-1], l, h)
+    n1 = np.append(n1, n1_temp)
+    n2 = np.append(n2, n2_temp)
+    t = np.append(t, t[-1]+h)
+for k in requested_times:
+    index = np.abs(t - k).argmin()
+    print("n_1 at t = ", k, " is ", n1[index])
+    print("n_2 at t = ", k, " is ", n2[index])
+
 
 
 # plot the values of n_1 and n_2
